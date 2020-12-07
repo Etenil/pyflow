@@ -290,6 +290,7 @@ pub mod test {
             extras: HashMap::new(),
             repo_url: None,
             build: None,
+            sources: vec![],
         };
 
         let expected = r#"import setuptools

@@ -743,6 +743,26 @@ pub struct Lock {
     pub metadata: HashMap<String, String>, // ie checksums
 }
 
+
+/// The definition of a warehouse.
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct Source {
+    pub name: String,
+    pub url: String,
+}
+
+impl Source {
+    pub fn from_hashmap(value: &HashMap<String, String>) -> Result<Source, String> {
+        value.get("name").ok_or("No key `name` in source")?;
+        value.get("url").ok_or("No key `url` in source")?;
+
+        Ok(Source {
+            name: value.get("name").unwrap().clone(),
+            url: value.get("url").unwrap().clone(),
+        })
+    }
+}
+
 #[cfg(test)]
 pub mod tests {
     use ReqType::*;
@@ -1407,5 +1427,20 @@ pub mod tests {
         assert_eq!(a5, vec![Constraint::new(Exact, Version::new(3, 6, 0))]);
         assert_eq!(a6, vec![Constraint::new(Gte, Version::new(2, 0, 0))]);
         assert_eq!(a7, vec![Constraint::new(Caret, Version::new(2, 7, 0))]);
+    }
+
+    #[test]
+    fn parse_source() {
+        let url = String::from("http://foobar.com/blah");
+        let name = String::from("foobar");
+
+        let mut a: HashMap<String, String> = HashMap::new();
+        a.insert(String::from("url"), url.clone());
+        a.insert(String::from("name"), name.clone());
+
+        let b: Source = Source::from_hashmap(&a).unwrap();
+
+        assert_eq!(b.url, url);
+        assert_eq!(b.name, name);
     }
 }

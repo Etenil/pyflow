@@ -1,6 +1,6 @@
 #![allow(clippy::non_ascii_literal)]
 
-use crate::dep_types::{Constraint, Lock, LockPackage, Package, Rename, Req, ReqType, Version};
+use crate::dep_types::{Constraint, Lock, LockPackage, Package, Rename, Req, ReqType, Version, Source};
 use crate::util::{abort, Os};
 use crossterm::{Color, Colored};
 use regex::Regex;
@@ -140,6 +140,7 @@ enum SubCommand {
 pub struct Config {
     name: Option<String>,
     py_version: Option<Version>,
+    sources: Vec<Source>,
     reqs: Vec<Req>,
     dev_reqs: Vec<Req>,
     version: Option<Version>,
@@ -494,6 +495,11 @@ impl Config {
             }
             if let Some(deps) = pf.dev_dependencies {
                 result.dev_reqs = Self::parse_deps(deps);
+            }
+            if let Some(v) = pf.source {
+                result.sources.push(Source::from_hashmap(&v)
+                        .expect("Problem parsing repository source config")
+                );
             }
         }
 

@@ -494,10 +494,10 @@ impl Config {
                 result.dev_reqs = Self::parse_deps(deps);
             }
             if let Some(v) = pf.source {
-                for src in v {
-                    result.sources.push(Source::from_hashmap(&src)
-                        .expect("Problem parsing repository source config"));
-                }
+                result.sources = v
+                    .iter()
+                    .map(|src| Source::from_hashmap(&src).expect("Failed reading source config"))
+                    .collect();
             }
         }
 

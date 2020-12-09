@@ -94,7 +94,7 @@ pub struct Pyflow {
     #[serde(rename = "dev-dependencies")]
     pub dev_dependencies: Option<HashMap<String, DepComponentWrapper>>,
     pub extras: Option<HashMap<String, String>>,
-    pub source: Option<HashMap<String, String>>,
+    pub source: Option<Vec<HashMap<String, String>>>,
 }
 
 #[derive(Debug, Deserialize)]

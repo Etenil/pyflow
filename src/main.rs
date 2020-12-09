@@ -317,12 +317,9 @@ impl Config {
             Err(_) => return None,
         };
 
-        let decoded: files::Pyproject = if let Ok(d) = toml::from_str(&toml_str) {
-            d
-        } else {
-            abort("Problem parsing `pyproject.toml`");
-            unreachable!()
-        };
+        let decoded: files::Pyproject = toml::from_str(&toml_str).unwrap();
+
+
         let mut result = Self::default();
 
         // Parse Poetry first, since we'll use pyflow if there's a conflict.
@@ -497,9 +494,10 @@ impl Config {
                 result.dev_reqs = Self::parse_deps(deps);
             }
             if let Some(v) = pf.source {
-                result.sources.push(Source::from_hashmap(&v)
-                        .expect("Problem parsing repository source config")
-                );
+                for src in v {
+                    result.sources.push(Source::from_hashmap(&src)
+                        .expect("Problem parsing repository source config"));
+                }
             }
         }
 
@@ -1377,6 +1375,8 @@ fn main() {
 
     let mut cfg = Config::from_file(&cfg_path).unwrap_or_default();
     cfg.populate_path_subreqs();
+
+    println!("{:?}", cfg.sources);
 
     // Run subcommands that don't require info about the environment.
     match &subcmd {
